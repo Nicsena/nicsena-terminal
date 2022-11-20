@@ -1,9 +1,30 @@
-# nicsena-terminal
-An Node.js Express with EJS powered terminal made by Nicsena.
+# hello-express
 
-# Demo Website:
+A server that serves a webpage, its resources, and some data
 
-### Link: [https://nicsena-terminal.glitch.me/](https://nicsena-terminal.glitch.me/ "https://nicsena-terminal.glitch.me/")
-#### - The demo website doesn't have live output, and there's may or will be support for live output when the terminal gets released, and the terminal is in BETA.
-#### - The demo website terminal haves a limited amount of commands to be ran. Due to the limited amount of commands, the code is currently very messy or messy, and I may try to clean up the code when the terminal gets released.
-#### - Note: Entering a command will send a request to the website because it haves the some of the code in Express Program Controller but different.
+
+## Your Project
+
+On the front-end,
+
+- Edit `views/index.html` to change the content of the webpage
+- `public/client.js` is the javacript that runs when you load the webpage
+- `public/style.css` is the styles for `views/index.html`
+- Drag in `assets`, like images or music, to add them to your project
+
+On the back-end,
+
+- your app starts at `server.js`
+- add frameworks and packages in `package.json`
+- safely store app secrets in `.env` (nobody can see this but you and people you invite)
+
+Click `Show` in the header to see your app live. Updates to your code will instantly deploy.
+
+
+## Made by [Glitch](https://glitch.com/)
+
+**Glitch** is the friendly community where you'll build the app of your dreams. Glitch lets you instantly create, remix, edit, and host an app, bot or site, and you can invite collaborators or helpers to simultaneously edit code with you.
+
+Find out more [about Glitch](https://glitch.com/about).
+
+( ᵔ ᴥ ᵔ )
