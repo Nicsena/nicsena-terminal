@@ -1,6 +1,6 @@
 # Nicsena Terminal
 
-An web terminal that uses websocket for live output of executing commands.
+An web terminal that uses websocket for live output when executing commands.
 
 ## Note:
 
