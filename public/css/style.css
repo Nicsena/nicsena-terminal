@@ -1,0 +1,41 @@
+html,
+body {
+line-height: 1.15;
+background-color: #121212;
+color: #ffffff;
+}
+
+#page {
+  max-height: 100%;
+  background-color: #202020;
+}
+
+#page .title {
+  text-align: center;
+}
+
+#page #console {
+  background-color: #161616;
+  min-height:20vh;
+  height:50vh;
+  max-height:100%;
+  overflow-x: auto;
+  resize: vertical;
+}
+
+#page #console code {
+overflow-x: auto;
+white-space: pre-line;
+word-wrap: break-word;
+}
+
+#page form .form-control {
+background-color: #282828;
+color: #ffffff;
+border-color: #282828;
+}
+
+#footer {
+text-align: center;
+}
+
