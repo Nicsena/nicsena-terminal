@@ -22,6 +22,7 @@
   
 <script>
 
+
   $(document).on('submit', '#runform', function(event){
   
     event.preventDefault();
@@ -31,15 +32,21 @@
 });
   
   let websocket = new FriendlyWebSocket();
+  let program;
+  let programpid;
   
 websocket.on("open", () => {
 document.getElementById("status-websocket").innerHTML = `<b>Websocket Connection Status: <a style="color: #009622;">Connected!<a> </b>`
+document.getElementById("killbutton").style.display = "none";
 document.getElementById("execbutton").disabled = false
 document.getElementById("command").disabled = false
 websocket.send( JSON.stringify( [ {"event": "connected"} ] ) )
+setInterval(pingWs, 5000); // Start pinging every 5 seconds.
 });
   
 websocket.on("close", () => {
+clearInterval(pingWs) // Stop pinging.
+document.getElementById("killbutton").style.display = "none";
 document.getElementById("execbutton").disabled = true
 document.getElementById("command").disabled = true
 document.getElementById("status-websocket").innerHTML = `<b>Websocket Connection Status: <a style="color: #960000;">Disconnected!<a> </b>`
@@ -54,8 +61,26 @@ websocket.on("message", message => {
    //console.log(data)
       
    if(data[0]["event"] === "consoleoutput") {
-   //document.getElementById("output").innerHTML += `Websocket Response: ${JSON.stringify(data)} <br>Event: ${data[0]["event"]} <br>Args: ${data[0]["args"]}<br>` 
+   //document.getElementById("output").innerText += `\nWebsocket Response: ${JSON.stringify(data)} \n\nEvent: ${data[0]["event"]} \nProgram: ${data[0]["program"]} \nProgram PID: ${data[0]["pid"]} \nArgs: ${data[0]["args"]}\n` 
    document.getElementById("output").innerText +=`${data[0]["args"]}`
+   }
+
+   if(data[0]["event"] === "programstart") {
+    programpid = data[0]["args"]
+    document.getElementById("killbutton").disabled = false
+    document.getElementById("killbutton").innerText = `Kill running process - Command: ${program} - PID: ${data[0]["args"]}`
+    document.getElementById("killbutton").style.display = "block";
+    document.getElementById("execbutton").style.display = "none";
+    document.getElementById("command").disabled = true
+   }
+
+   if(data[0]["event"] === "programstop") {
+    document.getElementById("killbutton").disabled = true
+    document.getElementById("killbutton").style.display = "none";
+    document.getElementById("execbutton").style.display = "block";
+    document.getElementById("command").disabled = false
+    document.getElementById("killbutton").innerText = "";
+    programpid = "";
    }
     
   } catch (e) {
@@ -64,17 +89,53 @@ websocket.on("message", message => {
   
 });
 
-  
+function pingWs() {
+  websocket.send( JSON.stringify ( { "event": "ping" }))
+}  
 
 function run() {
     var command = document.runform.command.value;
 
     if(command === null || (!command.length)) return;
   
+    program = command;
     document.getElementById("output").innerText += `\n<%= user%>@<%=term_name %>:~$ ${command}\n` 
     websocket.send( JSON.stringify ( { "event": "command", "args": command } ) );
     document.runform.command.value = "";
+    addcommandtoHistory(command)
+
 };
+
+function killProcess() {
+  document.getElementById("killbutton").disabled = true
+  websocket.send( JSON.stringify ( { "event": "stopcommand", "args": programpid } ) );
+}
+  
+function clearConsole() {
+  document.getElementById("output").innerText = ""
+}
+  
+function toggleCommandHistory () {
+  const element = document.getElementById("command-history-container")
+  
+  if(element.style.display === "none") {
+    element.style.display = "block";
+  } else {
+    element.style.display = "none";
+  }
+  
+}
+  
+  
+let item = "0"
+  
+function addcommandtoHistory(cmd) {
+  const element = document.getElementById("command-history")
+  
+  item++
+  element.innerHTML += `<li class="list-group-item bg-dark">${item}: <code>${cmd}</code></li><br>`
+  
+}
   
 </script>
 
@@ -85,11 +146,24 @@ function run() {
 <%- include('header'); -%>
   
   
-   <p id="status-websocket"> <b> Websocket Connection Status: </b> </p>
+   <p id="status-websocket" name="status-websocket"><b> Websocket Connection Status: </b></p>
+  
+  
+  
+  
+  <!--   BUTTONS -->
+  
+  <p id="buttons" name="buttons">
+    <button id="clearconsolebutton" name="clearconsolebutton" type="button" onclick="clearConsole()" class="btn btn-danger">Clear Console</button>
+    <button id="commandhistorybutton" name="commandhistorybutton" type="button" onclick="toggleCommandHistory()" class="btn btn-info">Command History</button>
+  </p>
   
 
+  <!--  CONSOLE -->
+  
   <div id="console" name="console" class="container-fluid p-3 no-border rounded-top">
   
+    
     <code>
     <div id="output" name="output">
     </div>
@@ -98,6 +172,7 @@ function run() {
   </div>
 
   
+  <!--   COMMAND FORM -->
 
     <form id="runform" name="runform">
       
@@ -108,7 +183,8 @@ function run() {
             </div>
           
        <input type="text" placeholder="Type a command" name="command" id="command" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" required autocorrect="off" autocapitalize="none">
-          
+       <button id="killbutton" style="display:none;" name="killbutton" class="btn btn-danger rounded-0" onclick="killProcess()" type="button"></button>   
+
             <div class="input-group-append">
             <button id="execbutton" name="execbutton" class="btn btn-dark rounded-0" onclick="run()" type="button">Run</button>
             </div>
@@ -117,12 +193,33 @@ function run() {
       
   </form>
   
+  
+  
+  
+<!--   COMMAND HISTORY -->
+  
+   <div id="command-history-container" name="command-history-container" class="cardcontainer-fluid p-3 no-border rounded-top">
+     
+     <div id="command-history-header" name="command-history-header"> <h5>Command History</h5> </div>
+  
+       <ul class="list-group list-group-flush">
+
+  <div id="command-history" name="command-history">
+    
+   
+
+  </div>
+
+    </ul>
 
 
 </div>
   
+  
 <br>
+
 <%- include('footer'); -%>
+
 <br>
   
 </body>

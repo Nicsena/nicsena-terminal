@@ -10,8 +10,9 @@ color: #ffffff;
   background-color: #202020;
 }
 
-#page .title {
-  text-align: center;
+#page #buttons {
+  float: right;
+  position: relative;
 }
 
 #page #console {
@@ -33,6 +34,40 @@ word-wrap: break-word;
 background-color: #282828;
 color: #ffffff;
 border-color: #282828;
+}
+
+#page form #killbutton {
+  position: absolute;
+  width: 100%;
+  max-width: 100%;
+  color: #ffffff;
+}
+
+#page #command-history-header {
+width: 100%;
+}
+
+#page #command-history-container {
+margin-top:20px;
+width: 100%;
+background:#161616;
+overflow-x: auto;
+word-wrap: break-word;
+display: none;
+}
+
+#page #command-history {
+  background-color: #161616;
+  min-height:20vh;
+  height:30vh;
+  max-height:100%;
+  overflow-x: auto;
+}
+
+
+#page .card {
+margin-top:10px;
+margin-bottom:10px;
 }
 
 #footer {
